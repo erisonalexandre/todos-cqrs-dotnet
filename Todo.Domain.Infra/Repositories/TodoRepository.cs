@@ -52,14 +52,10 @@ namespace Todo.Domain.Infra.Repositories
             return _context.Todos.Where(TodoQueries.GetByPeriod(user, date, done)).OrderBy(x => x.Date).AsNoTracking().ToList();
         }
 
-        public void Delete(Guid id, string user)
+        public void Delete(TodoItem todo)
         {
-            var todo = _context.Todos.FirstOrDefault(x => x.Id == id && x.User == user);
-            if (todo != null)
-            {
-                _context.Todos.Remove(todo);
-                _context.SaveChanges();
-            }
+            _context.Todos.Remove(todo);
+            _context.SaveChanges();
         }
     }
 }
