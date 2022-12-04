@@ -12,7 +12,8 @@ namespace Todo.Domain.Handlers
         IHandler<CreateTodoCommand>,
         IHandler<UpdateTodoCommand>,
         IHandler<MarkTodoAsDoneCommand>,
-        IHandler<MarkTodoAsUndoneCommand>
+        IHandler<MarkTodoAsUndoneCommand>,
+        IHandler<DeleteTodoCommand>
     {
         private readonly ITodoRepository _repository;
 
@@ -46,11 +47,16 @@ namespace Todo.Domain.Handlers
 
             var todo = _repository.GetById(command.Id, command.User);
 
+            if (todo == null)
+            {
+                return new GenericCommandResult(false, "Tarefa não encontrada!", new { });
+            }
+
             todo.UpdateTitle(command.Title);
 
             _repository.Update(todo);
 
-            return new GenericCommandResult(true, "Tarefa salva com sucesso!", todo);
+            return new GenericCommandResult(true, "Tarefa atualizada com sucesso!", todo);
         }
 
         public ICommandResult Handle(MarkTodoAsDoneCommand command)
@@ -62,6 +68,11 @@ namespace Todo.Domain.Handlers
             }
 
             var todo = _repository.GetById(command.Id, command.User);
+
+            if (todo == null)
+            {
+                return new GenericCommandResult(false, "Tarefa não encontrada!", new { });
+            }
 
             todo.MarkAsDone();
 
@@ -80,11 +91,37 @@ namespace Todo.Domain.Handlers
 
             var todo = _repository.GetById(command.Id, command.User);
 
+
+            if (todo == null)
+            {
+                return new GenericCommandResult(false, "Tarefa não encontrada!", new { });
+            }
+
             todo.MarkAsUndone();
 
             _repository.Update(todo);
 
             return new GenericCommandResult(true, "Tarefa salva com sucesso!", todo);
+        }
+
+        public ICommandResult Handle(DeleteTodoCommand command)
+        {
+            command.Validate();
+            if (command.Invalid)
+            {
+                return new GenericCommandResult(false, "Ops, parece que sua tarefa está errada!", command.Notifications);
+            }
+
+            var todo = _repository.GetById(command.Id, command.User);
+
+            if (todo == null)
+            {
+                return new GenericCommandResult(false, "Tarefa não encontrada!", new { });
+            }
+
+            _repository.Delete(todo);
+
+            return new GenericCommandResult(true, "Tarefa removida com sucesso!", todo);
         }
     }
 }

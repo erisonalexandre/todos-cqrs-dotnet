@@ -10,6 +10,8 @@ namespace Todo.Domain.Repositories
 
         TodoItem? GetById(Guid id, string user);
 
+        void Delete(TodoItem todo);
+
         IEnumerable<TodoItem> GetAll(string user);
 
         IEnumerable<TodoItem> GetAllDone(string user);
