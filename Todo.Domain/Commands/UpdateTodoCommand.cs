@@ -6,11 +6,6 @@ namespace Todo.Domain.Commands
 {
     public class UpdateTodoCommand : Notifiable, ICommand
     {
-        public UpdateTodoCommand()
-        {
-
-        }
-
         public UpdateTodoCommand(Guid id, string title, string user)
         {
             Id = id;
